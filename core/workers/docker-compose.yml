@@ -1,0 +1,53 @@
+version: '3.9'
+
+services:
+  api_server:
+    container_name: api_server
+    image: ai-reception/workers:0.1
+    command: ['/app/.build/${SWIFT_BUILD_CONFIG}/APIServer', 'serve']
+    restart: always
+    volumes:
+      - ../.env:/app/.env
+    networks:
+      - ai-reception-net
+
+  mini_app:
+    container_name: mini_app
+    image: ai-reception/workers:0.1
+    command: ['/app/.build/${SWIFT_BUILD_CONFIG}/MiniApp', 'serve']
+    restart: always
+    volumes:
+      - ../.env:/app/.env
+    networks:
+      - ai-reception-net
+
+  session_worker:
+    image: ai-reception/workers:0.1
+    command: ['/app/.build/${SWIFT_BUILD_CONFIG}/SessionWorker', 'serve']
+    restart: always
+    volumes:
+      - ../.env:/app/.env
+    networks:
+      - ai-reception-net
+
+  transcription_worker:
+    image: ai-reception/workers:0.1
+    command: ['/app/.build/${SWIFT_BUILD_CONFIG}/TranscriptionWorker', 'serve']
+    restart: always
+    volumes:
+      - ../.env:/app/.env
+    networks:
+      - ai-reception-net
+
+  analysis_worker:
+    image: ai-reception/workers:0.1
+    command: ['/app/.build/${SWIFT_BUILD_CONFIG}/AnalysisWorker', 'serve']
+    restart: always
+    volumes:
+      - ../.env:/app/.env
+    networks:
+      - ai-reception-net
+
+networks:
+  ai-reception-net:
+    external: true

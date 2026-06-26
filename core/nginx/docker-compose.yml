@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: ai-reception-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /var/www/certbot:/var/www/certbot:ro
+    restart: always
+    networks:
+      - ai-reception-net
+
+networks:
+  ai-reception-net:
+    external: true

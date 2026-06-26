@@ -1,0 +1,173 @@
+#extend("base"):
+
+#export("head"):
+<style>
+    .error-container {
+        text-align: center;
+        padding: 40px 20px;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+    
+    .error-icon {
+        font-size: 64px;
+        margin-bottom: 24px;
+        opacity: 0.6;
+    }
+    
+    .error-details {
+        background: var(--tg-theme-secondary-bg-color);
+        border-radius: 12px;
+        padding: 16px;
+        margin: 24px 0;
+        text-align: left;
+        font-family: monospace;
+        font-size: 14px;
+        overflow-x: auto;
+        word-break: break-all;
+        cursor: pointer;
+        transition: background 0.2s ease;
+    }
+    
+    .error-details:hover {
+        background: var(--tg-theme-hint-color);
+        opacity: 0.9;
+    }
+    
+    .error-details:active {
+        opacity: 0.7;
+    }
+    
+    .copy-indicator {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: var(--tg-theme-link-color);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+        z-index: 1000;
+    }
+    
+    .copy-indicator.show {
+        opacity: 1;
+    }
+    
+    .contact-info {
+        background: var(--tg-theme-section-bg-color);
+        border-radius: 12px;
+        padding: 16px;
+        margin-top: 24px;
+        border-left: 4px solid var(--tg-theme-link-color);
+    }
+    
+    .back-button {
+        margin-top: 32px;
+        width: 100%;
+    }
+</style>
+#endexport
+
+#export("body"):
+<div class="error-container">
+    <div class="error-icon">⚠️</div>
+    
+    <h1 class="title2">Something went wrong</h1>
+    <p class="body text-secondary">An unexpected error occurred</p>
+    
+    #if(errorMessage):
+    <div class="error-details" onclick="copyErrorDetails()" title="Click to copy">
+        <strong>Error:</strong><br>
+        #(errorMessage)
+        
+        #if(timestamp):
+        <br><br><strong>Time:</strong> #(timestamp)
+        #endif
+        
+        #if(requestId):
+        <br><strong>Request ID:</strong> #(requestId)
+        #endif
+        
+        #if(path):
+        <br><strong>Path:</strong> #(path)
+        #endif
+    </div>
+    #endif
+    
+    <div class="contact-info">
+        <div class="headline">📧 Help the developer</div>
+        <p class="subhead text-secondary" style="margin-top: 8px;">
+            Please send a screenshot of this page to the developer for a quick fix.
+        </p>
+    </div>
+    
+    <a href="/devices" 
+       class="btn btn-primary back-button"
+       onclick="hapticMedium()">
+        Back to main
+    </a>
+</div>
+
+<div class="copy-indicator" id="copyIndicator">Copied!</div>
+#endexport
+
+#export("scripts"):
+<script>
+function copyErrorDetails() {
+    hapticMedium();
+    
+    const errorDiv = document.querySelector('.error-details');
+    if (!errorDiv) return;
+    
+    const text = errorDiv.innerText;
+    
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => {
+            showCopyIndicator();
+        }).catch(() => {
+            fallbackCopy(text);
+        });
+    } else {
+        fallbackCopy(text);
+    }
+}
+
+function fallbackCopy(text) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    
+    try {
+        document.execCommand('copy');
+        showCopyIndicator();
+    } catch (err) {
+        console.error('Copy error:', err);
+    } finally {
+        document.body.removeChild(textArea);
+    }
+}
+
+function showCopyIndicator() {
+    const indicator = document.getElementById('copyIndicator');
+    if (indicator) {
+        indicator.classList.add('show');
+        setTimeout(() => {
+            indicator.classList.remove('show');
+        }, 2000);
+    }
+}
+</script>
+#endexport
+
+#endextend

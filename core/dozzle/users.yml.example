@@ -1,0 +1,15 @@
+# Dozzle users file. Copy to `users.yml` and replace with real credentials.
+# NEVER commit a real `users.yml`.
+#
+# The `password` field is a bcrypt hash (NOT plaintext).
+# Generate one, e.g.:
+#   htpasswd -nbBC 11 admin 'your-password' | cut -d: -f2
+# or with Dozzle's helper:
+#   docker run amir20/dozzle generate admin --password your-password --name Admin
+users:
+    admin:
+        email: admin@example.com
+        name: Admin
+        # Fake placeholder bcrypt hash - replace with your own generated hash.
+        password: $2a$11$0000000000000000000000000000000000000000000000000000a
+        filter: ""

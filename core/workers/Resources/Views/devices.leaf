@@ -1,0 +1,81 @@
+#extend("base"):
+
+#export("head"):
+<style>
+    .devices-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+    }
+    
+    .device-item {
+        display: flex;
+        align-items: center;
+        padding: 16px;
+    }
+    
+    .device-info {
+        flex: 1;
+        margin-left: 12px;
+    }
+    
+    .device-status {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 4px;
+    }
+    
+    .add-device-btn {
+        width: 100%;
+        margin-top: 16px;
+    }
+</style>
+#endexport
+
+#export("body"):
+<div class="container">
+    <div class="devices-header">
+        <div>
+            <h1 class="title2">Your devices</h1>
+            <p class="footnote text-secondary">Total devices: #(totalDevices)</p>
+        </div>
+    </div>
+    
+    <div class="list-group">
+        #for(device in devices):
+        <a href="/devices/#(device.id)" 
+           class="list-item" 
+           onclick="hapticLight()"
+           style="text-decoration: none; color: inherit;">
+            <div class="status-dot #if(device.isActive):status-active#else:status-inactive#endif"></div>
+            <div class="device-info">
+                <div class="headline">#(device.title)</div>
+                <div class="subhead text-secondary">#(device.id)</div>
+                <div class="device-status">
+                    <span class="footnote text-tertiary">
+                        #if(device.isActive):Active#else:Inactive#endif
+                    </span>
+                    <span class="footnote text-tertiary">•</span>
+                    <span class="footnote text-tertiary">#(device.lastActivity)</span>
+                </div>
+            </div>
+            <div class="footnote text-secondary">›</div>
+        </a>
+        #endfor
+    </div>
+    
+    <a href="/devices/add" 
+       class="btn btn-primary add-device-btn"
+       onclick="hapticMedium()">
+        Add device
+    </a>
+</div>
+#endexport
+
+#export("scripts"):
+<!-- Haptic feedback handled by base.leaf -->
+#endexport
+
+#endextend

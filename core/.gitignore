@@ -1,0 +1,64 @@
+/supabase/volumes/db/data
+/supabase/volumes/db/backups
+.env.*
+.env
+.DS_Store
+.build/
+.swiftpm/
+.vscode
+/backup/logs
+
+# Supabase local development files
+supabase/.branches/
+supabase/.temp/
+supabase/logs/
+
+# Node modules
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build outputs
+dist/
+build/
+out/
+
+# Git
+.git/
+
+# Docker
+.dockerignore
+
+# Documentation
+
+portainer/data
+workers/build.log
+
+# Real secrets (keep only the *.example templates in the public repo)
+dozzle/users.yml
+# ...but DO publish the placeholder templates
+!.env.example
+!dozzle/users.yml.example

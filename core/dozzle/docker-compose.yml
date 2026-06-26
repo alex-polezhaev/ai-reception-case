@@ -1,0 +1,19 @@
+services:
+  dozzle:
+    image: amir20/dozzle:latest
+    container_name: dozzle
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:9999:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./users.yml:/data/users.yml:ro
+    environment:
+      - DOZZLE_AUTH_PROVIDER=simple
+      - DOZZLE_NO_ANALYTICS=true
+    networks:
+      - ai-reception-net
+
+networks:
+  ai-reception-net:
+    external: true

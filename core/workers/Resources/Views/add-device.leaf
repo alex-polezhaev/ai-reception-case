@@ -1,0 +1,156 @@
+#extend("base"):
+
+#export("head"):
+<style>
+    .add-device-header {
+        margin-bottom: 24px;
+        text-align: center;
+    }
+    
+    .form-section {
+        background: var(--tg-theme-section-bg-color);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 16px;
+    }
+    
+    .form-group {
+        margin-bottom: 16px;
+    }
+    
+    .form-group:last-child {
+        margin-bottom: 0;
+    }
+    
+    .form-label {
+        display: block;
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--tg-theme-text-color);
+        margin-bottom: 8px;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid var(--tg-theme-secondary-bg-color);
+        border-radius: 8px;
+        background: var(--tg-theme-bg-color);
+        color: var(--tg-theme-text-color);
+        font-size: 17px;
+        transition: border-color 0.2s ease;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: var(--tg-theme-button-color);
+    }
+    
+    .form-help {
+        font-size: 13px;
+        color: var(--tg-theme-hint-color);
+        margin-top: 4px;
+    }
+    
+    .submit-btn {
+        width: 100%;
+        margin-top: 24px;
+        padding: 16px;
+        font-size: 17px;
+        font-weight: 600;
+    }
+    
+    .error-message {
+        background: rgba(255, 59, 48, 0.1);
+        border: 1px solid var(--tg-theme-destructive-text-color);
+        color: var(--tg-theme-destructive-text-color);
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        font-size: 15px;
+        display: none;
+    }
+    
+    .success-message {
+        background: rgba(52, 199, 89, 0.1);
+        border: 1px solid #34C759;
+        color: #34C759;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        font-size: 15px;
+        display: none;
+    }
+    
+    .htmx-indicator {
+        display: none;
+    }
+    
+    .loading .htmx-indicator {
+        display: inline;
+    }
+</style>
+#endexport
+
+#export("body"):
+<div class="container">
+    <div class="add-device-header">
+        <h1 class="title2">#(title)</h1>
+        <p class="subhead text-secondary">
+            #if(userName):Hello, #(userName)! #endifConnect a new device to the system
+        </p>
+    </div>
+    
+    <div id="messages"></div>
+    
+    <form hx-post="/devices/add" 
+          hx-target="#messages" 
+          hx-swap="innerHTML"
+          hx-indicator=".loading"
+          onclick="hapticLight()">
+        
+        <div class="form-section">
+            <div class="form-group">
+                <label for="deviceCode" class="form-label">Connection code</label>
+                <input type="text" 
+                       id="deviceCode" 
+                       name="deviceCode" 
+                       class="form-control" 
+                       placeholder="Enter device code"
+                       required
+                       oninput="this.value = this.value.toUpperCase(); hapticSelection();"
+                       onfocus="hapticLight()">
+                <div class="form-help">The unique code printed on the device</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="deviceName" class="form-label">Device name</label>
+                <input type="text" 
+                       id="deviceName" 
+                       name="deviceName" 
+                       class="form-control" 
+                       placeholder="E.g.: Office - meeting room, 15 Lenin St."
+                       required
+                       onfocus="hapticLight()"
+                       oninput="hapticSelection()">
+                <div class="form-help">It is recommended to include the address or location in the name for easy device identification</div>
+            </div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary submit-btn loading">
+            Add device
+            <span class="htmx-indicator">
+                <div class="spinner" style="width: 20px; height: 20px; margin-left: 8px;"></div>
+            </span>
+        </button>
+    </form>
+</div>
+#endexport
+
+#export("scripts"):
+<script>
+    // Auto-redirect on success handled by form-response.leaf
+</script>
+#endexport
+
+#endextend

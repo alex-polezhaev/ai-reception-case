@@ -1,0 +1,88 @@
+#if(type == "success"):
+<div class="success-message" style="display: block;">
+    #if(title):
+    <div class="message-title">#(title)</div>
+    #endif
+    #(message)
+    #if(autoHide):
+    <script>
+        setTimeout(() => {
+            const msg = document.querySelector('.success-message');
+            if (msg) msg.style.display = 'none';
+        }, #(autoHide));
+    </script>
+    #endif
+    #if(redirectTo):
+    <script>
+        setTimeout(() => {
+            window.location.href = '#(redirectTo)';
+        }, #if(redirectDelay):#(redirectDelay)#else:2000#endif);
+    </script>
+    #endif
+</div>
+#elseif(type == "warning"):
+<div class="warning-message" style="display: block;">
+    #if(title):
+    <div class="message-title">#(title)</div>
+    #endif
+    #(message)
+</div>
+#elseif(type == "info"):
+<div class="info-message" style="display: block;">
+    #if(title):
+    <div class="message-title">#(title)</div>
+    #endif
+    #(message)
+</div>
+#else:
+<div class="error-message" style="display: block;">
+    #if(title):
+    <div class="message-title">#(title)</div>
+    #endif
+    #(message)
+    #if(retryAction):
+    <div class="message-actions">
+        <button class="btn btn-secondary" onclick="#(retryAction)">Try again</button>
+    </div>
+    #endif
+</div>
+#endif
+
+<style>
+.message-title {
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 15px;
+}
+
+.warning-message {
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid #ffc107;
+    color: #856404;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-size: 15px;
+}
+
+.info-message {
+    background: rgba(13, 202, 240, 0.1);
+    border: 1px solid #0dcaf0;
+    color: #055160;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-size: 15px;
+}
+
+.message-actions {
+    margin-top: 12px;
+}
+
+.message-actions .btn {
+    padding: 8px 16px;
+    font-size: 14px;
+    min-height: auto;
+    width: auto;
+}
+</style>

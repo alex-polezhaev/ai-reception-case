@@ -1,0 +1,330 @@
+#extend("base"):
+
+#export("head"):
+<style>
+    .session-header {
+        margin-bottom: 24px;
+    }
+    
+    .session-meta {
+        background: var(--tg-theme-section-bg-color);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 16px;
+    }
+    
+    .meta-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 0.5px solid var(--tg-theme-secondary-bg-color);
+    }
+    
+    .meta-row:last-child {
+        border-bottom: none;
+    }
+    
+    .audio-section {
+        background: var(--tg-theme-section-bg-color);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 16px;
+    }
+    
+    .audio-player {
+        width: 100%;
+        margin-top: 12px;
+        border-radius: 8px;
+        background: var(--tg-theme-secondary-bg-color);
+    }
+    
+    .keywords-section {
+        background: var(--tg-theme-section-bg-color);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 16px;
+    }
+    
+    .keywords-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-top: 8px;
+    }
+    
+    .keyword-tag {
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 500;
+        border: none;
+    }
+    
+    .keywords-private .keyword-tag {
+        background: #f3e5f5;
+        color: #7b1fa2;
+    }
+    
+    .keywords-client-sale .keyword-tag {
+        background: #ffebee;
+        color: #d32f2f;
+    }
+    
+    .keywords-client-support .keyword-tag {
+        background: #e3f2fd;
+        color: #1565c0;
+    }
+    
+    .keywords-unknown .keyword-tag {
+        background: var(--tg-theme-secondary-bg-color);
+        color: var(--tg-theme-hint-color);
+    }
+    
+    .session-type {
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 500;
+        text-transform: uppercase;
+        color: white;
+        border: none;
+    }
+    
+    .type-private { background: #7b1fa2; }
+    .type-client-sale { background: #d32f2f; }
+    .type-client-support { background: #1565c0; }
+    
+    .products-section {
+        background: var(--tg-theme-section-bg-color);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 16px;
+    }
+    
+    .star-rating {
+        display: flex;
+        gap: 2px;
+        align-items: center;
+    }
+    
+    .star {
+        font-size: 16px;
+        color: #ffd700;
+    }
+    
+    .star.empty {
+        color: var(--tg-theme-secondary-bg-color);
+    }
+    
+    .product-tag {
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 500;
+        background: #e3f2fd;
+        color: #1565c0;
+        border: none;
+    }
+    
+    .facts-section {
+        background: var(--tg-theme-section-bg-color);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 16px;
+    }
+    
+    .fact-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 8px;
+        line-height: 1.4;
+    }
+    
+    .fact-item:last-child {
+        margin-bottom: 0;
+    }
+    
+    .fact-bullet {
+        color: var(--tg-theme-link-color);
+        margin-right: 8px;
+        margin-top: 2px;
+        flex-shrink: 0;
+    }
+    
+    .transcription-section {
+        background: var(--tg-theme-section-bg-color);
+        border-radius: 12px;
+        margin-bottom: 16px;
+        overflow: hidden;
+    }
+    
+    .transcription-header {
+        padding: 16px;
+        border-bottom: 0.5px solid var(--tg-theme-secondary-bg-color);
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--tg-theme-secondary-bg-color);
+    }
+    
+    .transcription-header:active {
+        opacity: 0.7;
+    }
+    
+    .transcription-content {
+        padding: 16px;
+        display: none;
+    }
+    
+    .transcription-content.expanded {
+        display: block;
+    }
+    
+    .transcription-text {
+        line-height: 1.6;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+    }
+    
+    .expand-icon {
+        transition: transform 0.2s ease;
+    }
+    
+    .expand-icon.rotated {
+        transform: rotate(180deg);
+    }
+</style>
+#endexport
+
+#export("body"):
+<div class="container">
+    <div class="session-header">
+        <h1 class="title2">#(session.title)</h1>
+        <div class="subhead text-secondary">#(session.deviceName)</div>
+    </div>
+    
+    <div class="session-meta">
+        <div class="meta-row">
+            <span class="subhead text-secondary">Date</span>
+            <span class="subhead">#(session.date)</span>
+        </div>
+        <div class="meta-row">
+            <span class="subhead text-secondary">Time</span>
+            <span class="subhead">#(session.time)</span>
+        </div>
+        <div class="meta-row">
+            <span class="subhead text-secondary">Duration</span>
+            <span class="subhead">#(session.duration)</span>
+        </div>
+        <div class="meta-row">
+            <span class="subhead text-secondary">Device</span>
+            <span class="subhead">#(session.deviceName)</span>
+        </div>
+        <div class="meta-row">
+            <span class="subhead text-secondary">Meeting type</span>
+            <span class="session-type type-#(session.type)">
+                #if(session.type == "private"):Private
+                #elseif(session.type == "client-sale"):Sale
+                #elseif(session.type == "client-support"):Support
+                #else:#(session.type)
+                #endif
+            </span>
+        </div>
+        #if(session.quality):
+        <div class="meta-row">
+            <span class="subhead text-secondary">Quality score</span>
+            <span class="subhead">#(session.qualityStars)/10</span>
+        </div>
+        #endif
+    </div>
+    
+    #if(session.keywords):
+    #if(count(session.keywords) > 0):
+    <div class="keywords-section">
+        <h3 class="headline mb-8">Keywords</h3>
+        <div class="keywords-container keywords-#(session.type)">
+            #for(keyword in session.keywords):
+            <span class="keyword-tag">#(keyword)</span>
+            #endfor
+        </div>
+    </div>
+    #endif
+    #endif
+    
+    #if(session.hasAudio):
+    <div class="audio-section">
+        <h3 class="headline mb-8">Audio recording</h3>
+        #if(session.audioUrl):
+        <audio class="audio-player" controls preload="metadata">
+            <source src="#(session.audioUrl)" type="audio/wav">
+            <source src="#(session.audioUrl)" type="audio/mpeg">
+            Your browser does not support audio playback.
+        </audio>
+        #else:
+        <div class="subhead text-secondary">Loading audio...</div>
+        #endif
+    </div>
+    #endif
+    
+    #if(session.products):
+    #if(count(session.products) > 0):
+    <div class="products-section">
+        <h3 class="headline mb-8">Products</h3>
+        <div class="keywords-container">
+            #for(product in session.products):
+            <span class="product-tag">#(product)</span>
+            #endfor
+        </div>
+    </div>
+    #endif
+    #endif
+    
+    #if(session.optimizedText):
+    <div class="transcription-section">
+        <div class="transcription-header" onclick="toggleOptimizedText()">
+            <h3 class="headline">Improved text</h3>
+            <div class="expand-icon" id="optimized-icon">▼</div>
+        </div>
+        <div class="transcription-content" id="optimized-content">
+            <div class="transcription-text body">#(session.optimizedText)</div>
+        </div>
+    </div>
+    #endif
+    
+    <div class="transcription-section">
+        <div class="transcription-header" onclick="toggleTranscription()">
+            <h3 class="headline">Original text</h3>
+            <div class="expand-icon" id="transcription-icon">▼</div>
+        </div>
+        <div class="transcription-content" id="transcription-content">
+            <div class="transcription-text body">#(session.fullTranscription)</div>
+        </div>
+    </div>
+</div>
+#endexport
+
+#export("scripts"):
+<script>
+    function toggle(contentId, iconId) {
+        haptic();
+        const content = document.getElementById(contentId);
+        const icon = document.getElementById(iconId);
+        
+        if (content && icon) {
+            const isExpanded = content.classList.contains('expanded');
+            content.classList.toggle('expanded');
+            icon.classList.toggle('rotated');
+            
+            if (!isExpanded) haptic('selection');
+        }
+    }
+    
+    // Legacy functions
+    const toggleTranscription = () => toggle('transcription-content', 'transcription-icon');
+    const toggleOptimizedText = () => toggle('optimized-content', 'optimized-icon');
+</script>
+#endexport
+
+#endextend

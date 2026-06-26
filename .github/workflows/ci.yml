@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  firmware-build:
+    name: Firmware build (ESP32-S3)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache PlatformIO
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.platformio
+            ~/.cache/pip
+          key: pio-${{ runner.os }}-${{ hashFiles('firmware/platformio.ini') }}
+          restore-keys: pio-${{ runner.os }}-
+
+      - name: Install PlatformIO
+        run: pip install --upgrade platformio
+
+      - name: Build firmware
+        # SERVER_URL and DEVICE_ID are injected into platformio build_flags;
+        # dummy values let the build flags resolve so the firmware compiles in CI.
+        env:
+          SERVER_URL: http://example.com:8080
+          DEVICE_ID: ci-device
+        run: pio run -d firmware
+
+  python-lint:
+    name: Python lint (Silero-VAD)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install ruff
+        run: pip install --upgrade ruff
+
+      - name: Lint core/silero-vad
+        # Report findings without failing the build (style guidance, not a gate).
+        run: ruff check --exit-zero --output-format=github core/silero-vad

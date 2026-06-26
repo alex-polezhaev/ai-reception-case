@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>#(title) - AI Reception</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+    <style>
+        :root {
+            --tg-theme-bg-color: #ffffff;
+            --tg-theme-text-color: #000000;
+            --tg-theme-hint-color: #707579;
+            --tg-theme-link-color: #2481cc;
+            --tg-theme-button-color: #2481cc;
+            --tg-theme-button-text-color: #ffffff;
+            --tg-theme-secondary-bg-color: #efeff3;
+            --tg-theme-section-bg-color: #ffffff;
+            --tg-theme-section-header-text-color: #6d6d72;
+            --tg-theme-subtitle-text-color: #999999;
+            --tg-theme-destructive-text-color: #ff3b30;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--tg-theme-bg-color);
+            color: var(--tg-theme-text-color);
+            padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+            margin: 0;
+            min-height: 100vh;
+            overscroll-behavior: none;
+            -webkit-overflow-scrolling: touch;
+            font-size: 16px;
+        }
+        
+        /* HTMX Loading States */
+        .htmx-indicator {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .htmx-request .htmx-indicator {
+            opacity: 1;
+        }
+        
+        .htmx-request {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        
+        /* Spinner */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--tg-theme-secondary-bg-color);
+            border-top: 3px solid var(--tg-theme-button-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Typography */
+        .title1 { font-size: 28px; font-weight: 700; line-height: 1.2; }
+        .title2 { font-size: 22px; font-weight: 700; line-height: 1.2; }
+        .headline { font-size: 17px; font-weight: 500; line-height: 1.3; }
+        .body { font-size: 16px; font-weight: 400; line-height: 1.4; }
+        .subhead { font-size: 15px; font-weight: 400; line-height: 1.3; }
+        .footnote { font-size: 13px; font-weight: 400; line-height: 1.3; }
+        
+        /* Colors */
+        .text-secondary { color: var(--tg-theme-hint-color); }
+        .text-tertiary { color: var(--tg-theme-subtitle-text-color); }
+        
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            border-radius: 10px;
+            border: none;
+            font-size: 17px;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: opacity 0.15s ease;
+            min-height: 50px;
+            width: 100%;
+        }
+        
+        .btn:active { opacity: 0.7; }
+        
+        .btn-primary {
+            background: var(--tg-theme-button-color);
+            color: var(--tg-theme-button-text-color);
+        }
+        
+        .btn-secondary {
+            background: var(--tg-theme-secondary-bg-color);
+            color: var(--tg-theme-text-color);
+        }
+        
+        /* Sections */
+        .section {
+            margin: 20px 0;
+        }
+        
+        .section-header {
+            color: var(--tg-theme-section-header-text-color);
+            font-size: 13px;
+            font-weight: 400;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        
+        /* List styles */
+        .list-group {
+            background: var(--tg-theme-section-bg-color);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+        
+        .list-item {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 0.5px solid var(--tg-theme-secondary-bg-color);
+            min-height: 50px;
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+            background: var(--tg-theme-section-bg-color);
+        }
+        
+        .list-item:last-child { border-bottom: none; }
+        .list-item:active { background: var(--tg-theme-secondary-bg-color); }
+        
+        /* Status indicators */
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        
+        .status-active { background: #34C759; }
+        .status-inactive { background: #8E8E93; }
+        
+        .device-info {
+            flex: 1;
+            margin-left: 12px;
+        }
+        
+        .device-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 2px;
+        }
+        
+        /* Content */
+        .content {
+            max-width: 100%;
+        }
+        
+        /* Utility */
+        .text-center { text-align: center; }
+        .mb-8 { margin-bottom: 8px; }
+        .mb-16 { margin-bottom: 16px; }
+        .mb-24 { margin-bottom: 24px; }
+        .mt-8 { margin-top: 8px; }
+        .mt-16 { margin-top: 16px; }
+        
+        /* Form elements */
+        .form-group { margin-bottom: 16px; }
+        .form-label {
+            display: block;
+            font-size: 17px;
+            color: var(--tg-theme-text-color);
+            margin-bottom: 8px;
+            font-weight: 400;
+        }
+        .form-control {
+            width: 100%;
+            padding: 16px 20px;
+            border: none;
+            border-radius: 10px;
+            background: var(--tg-theme-secondary-bg-color);
+            color: var(--tg-theme-text-color);
+            font-size: 17px;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            background: var(--tg-theme-section-bg-color);
+            box-shadow: 0 0 0 1px var(--tg-theme-link-color);
+        }
+        
+        /* Navigation */
+        .nav-header {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            margin-bottom: 8px;
+        }
+        
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--tg-theme-link-color);
+            font-size: 17px;
+            padding: 8px;
+            margin-left: -8px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.15s ease;
+        }
+        
+        .back-btn:active {
+            background: var(--tg-theme-secondary-bg-color);
+        }
+        
+        .nav-title {
+            flex: 1;
+            font-size: 17px;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        /* Icon */
+        .chevron {
+            color: var(--tg-theme-hint-color);
+            font-size: 16px;
+            margin-left: auto;
+        }
+        
+        /* Word count styling */
+        .word-count {
+            font-size: 11px;
+            color: var(--tg-theme-link-color);
+            background: rgba(36, 129, 204, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        
+        /* Read badge styling */
+        .read-badge {
+            font-size: 11px;
+            color: #34C759;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        
+        /* Utility classes */
+        .hidden { display: none !important; }
+        .visible { display: block !important; }
+        .flex { display: flex !important; }
+        .text-ellipsis {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    </style>
+    #import("head")
+</head>
+<body>
+    <div id="appContent">
+        #import("body")
+    </div>
+    
+    <script>
+        const tg = window.Telegram?.WebApp;
+        
+        function applyTheme() {
+            if (tg?.themeParams) {
+                Object.keys(tg.themeParams).forEach(key => {
+                    document.documentElement.style.setProperty(
+                        `--tg-theme-${key.replace(/_/g, '-')}`, 
+                        tg.themeParams[key]
+                    );
+                });
+            }
+        }
+        
+        function setupClosingBehavior() {
+            if (!tg) return;
+            
+            const path = window.location.pathname;
+            
+         
+            tg.enableClosingConfirmation();
+            tg.BackButton.show();
+ 
+          tg.BackButton.onClick(() => {
+                hapticLight();
+                
+                const path = window.location.pathname;
+                const segments = path.split('/').filter(Boolean);
+                
+                if (path === '/devices') {
+                    tg.close();
+                } else if (segments.length === 2 && segments[0] === 'devices') {
+                    // /devices/:device_id -> /devices
+                    window.location.href = '/devices';
+                } else if (segments.length === 3 && segments[2] === 'sessions') {
+                    // /devices/:device_id/sessions -> /devices/:device_id
+                    window.location.href = `/devices/${segments[1]}`;
+                } else {
+                    // Fallback
+                    history.back();
+                }
+            });
+            
+        }
+        
+        // Haptic feedback functions
+        function haptic(type = 'light') {
+            if (!tg?.HapticFeedback) return;
+            
+            switch(type) {
+                case 'selection': tg.HapticFeedback.selectionChanged(); break;
+                case 'success': tg.HapticFeedback.notificationOccurred('success'); break;
+                case 'error': tg.HapticFeedback.notificationOccurred('error'); break;
+                case 'warning': tg.HapticFeedback.notificationOccurred('warning'); break;
+                case 'medium': tg.HapticFeedback.impactOccurred('medium'); break;
+                case 'heavy': tg.HapticFeedback.impactOccurred('heavy'); break;
+                default: tg.HapticFeedback.impactOccurred('light');
+            }
+        }
+        
+        // Legacy aliases
+        if (typeof hapticLight === 'undefined') {
+            window.hapticLight = () => haptic('light');
+            window.hapticMedium = () => haptic('medium');
+            window.hapticHeavy = () => haptic('heavy');
+            window.hapticSuccess = () => haptic('success');
+            window.hapticError = () => haptic('error');
+            window.hapticWarning = () => haptic('warning');
+            window.hapticSelection = () => haptic('selection');
+        }
+        
+        // Initialization for already authenticated pages
+        if (tg) {
+            tg.ready();
+            tg.expand();
+            applyTheme();
+            tg.onEvent?.('themeChanged', applyTheme);
+            setupClosingBehavior();
+        }
+        
+        // HTMX event handlers
+        document.addEventListener('htmx:beforeRequest', function(e) {
+            hapticLight();
+        });
+        
+        document.addEventListener('htmx:afterRequest', function(e) {
+            if (e.detail.successful) {
+                hapticSuccess();
+                // Update the back button with a delay
+                setTimeout(() => {
+                    if (tg) setupClosingBehavior();
+                }, 100);
+            } else {
+                hapticError();
+            }
+        });
+        
+        // Update on URL change
+        window.addEventListener('popstate', function() {
+            if (tg) setupClosingBehavior();
+        });
+        
+        window.addEventListener('pushstate', function() {
+            if (tg) setupClosingBehavior();
+        });
+        
+    </script>
+    
+    #import("scripts")
+</body>
+</html>

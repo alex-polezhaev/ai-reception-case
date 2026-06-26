@@ -1,0 +1,44 @@
+# Normalize line endings: auto-detect text and store with LF in the repo.
+* text=auto eol=lf
+
+# Explicit text files
+*.swift   text
+*.py      text
+*.c       text
+*.h       text
+*.cpp     text
+*.hpp     text
+*.ino     text
+*.md      text
+*.markdown text
+*.yml     text
+*.yaml    text
+*.json    text
+*.toml    text
+*.ini     text
+*.sql     text
+*.sh      text eol=lf
+Makefile  text
+*.mk      text
+
+# Binary assets — never diff or normalize
+*.step    binary
+*.3mf     binary
+*.stl     binary
+*.webp    binary
+*.png     binary
+*.jpg     binary
+*.jpeg    binary
+*.gif     binary
+*.mp4     binary
+*.mov     binary
+*.pdf     binary
+*.ico     binary
+*.woff    binary
+*.woff2   binary
+
+# Third-party / generated code — exclude from language stats and diffs.
+# Mark vendored paths here as the project grows, e.g.:
+# core/workers/Sources/Vendor/** linguist-vendored
+Package.resolved        linguist-generated
+core/supabase/seed.sql  linguist-generated

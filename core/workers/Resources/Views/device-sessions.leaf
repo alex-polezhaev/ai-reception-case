@@ -1,0 +1,277 @@
+#extend("base"):
+
+#export("head"):
+<style>
+    .device-header {
+        margin-bottom: 24px;
+        padding: 0;
+    }
+    
+    .day-group {
+        background: var(--tg-theme-section-bg-color);
+        border-radius: 12px;
+        margin-bottom: 12px;
+        overflow: hidden;
+    }
+    
+    .day-header {
+        padding: 12px 16px;
+        border-bottom: 0.5px solid var(--tg-theme-secondary-bg-color);
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--tg-theme-secondary-bg-color);
+    }
+    
+    .day-header:active {
+        opacity: 0.7;
+    }
+    
+    .session-item {
+        padding: 12px 16px;
+        border-bottom: 0.5px solid var(--tg-theme-secondary-bg-color);
+        cursor: pointer;
+        transition: background-color 0.1s ease;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+    }
+    
+    .session-item:last-child {
+        border-bottom: none;
+    }
+    
+    .session-item:active {
+        background: var(--tg-theme-secondary-bg-color);
+    }
+    
+    .session-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 4px;
+    }
+    
+    .session-time-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .session-time {
+        font-size: 14px;
+        color: var(--tg-theme-hint-color);
+    }
+    
+    .word-count {
+        font-size: 11px;
+        color: var(--tg-theme-link-color);
+        background: rgba(36, 129, 204, 0.1);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-weight: 500;
+    }
+    
+    .read-badge {
+        font-size: 11px;
+        color: #34C759;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-weight: 500;
+    }
+    
+    .session-duration {
+        font-size: 12px;
+        color: var(--tg-theme-link-color);
+        font-weight: 500;
+        background: rgba(89, 189, 96, 0.1);
+        padding: 2px 6px;
+        border-radius: 4px;
+    }
+    
+    .session-type {
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 500;
+        text-transform: uppercase;
+        color: white;
+        border: none;
+    }
+    
+    .type-private { background: #7b1fa2; }
+    .type-client-sale { background: #d32f2f; }
+    .type-client-support { background: #1565c0; }
+    .type-unknown { background: var(--tg-theme-hint-color); }
+    
+    .session-title {
+        font-size: 16px;
+        font-weight: 500;
+        color: var(--tg-theme-text-color);
+        margin-bottom: 6px;
+        line-height: 1.3;
+    }
+    
+    .session-keywords {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+    
+    .keyword-badge {
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 500;
+        border: none;
+    }
+    
+    .keywords-private .keyword-badge {
+        background: #f3e5f5;
+        color: #7b1fa2;
+    }
+    
+    .keywords-client-sale .keyword-badge {
+        background: #ffebee;
+        color: #d32f2f;
+    }
+    
+    .keywords-client-support .keyword-badge {
+        background: #e3f2fd;
+        color: #1565c0;
+    }
+    
+    .keywords-unknown .keyword-badge {
+        background: var(--tg-theme-secondary-bg-color);
+        color: var(--tg-theme-hint-color);
+    }
+    
+    .sessions-list {
+        display: none;
+    }
+    
+    .sessions-list.expanded {
+        display: block;
+    }
+    
+    .expand-icon {
+        transition: transform 0.2s ease;
+    }
+    
+    .expand-icon.rotated {
+        transform: rotate(180deg);
+    }
+    
+    .no-sessions {
+        text-align: center;
+        padding: 40px 16px;
+        color: var(--tg-theme-hint-color);
+    }
+</style>
+#endexport
+
+#export("body"):
+<div class="container">
+    <div class="device-header">
+        #if(device):
+        <h1 class="title2">#(device.title)</h1>
+        <p class="subhead text-secondary">#(device.id) • #(device.lastActivity)</p>
+        #else:
+        <h1 class="title2">Device not found</h1>
+        #endif
+    </div>
+    
+    <div class="sessions-container">
+        #if(count(dayGroups) > 0):
+            #for(dayGroup in dayGroups):
+            <div class="day-group">
+                <div class="day-header" onclick="toggleDay('#(dayGroup.date)')">
+                    <div>
+                        <div class="headline">#(dayGroup.date)</div>
+                        <div class="caption1 text-secondary">
+                            #(count(dayGroup.sessions)) 
+                            #if(count(dayGroup.sessions) == 1):conversation
+                            #else:conversations#endif
+                        </div>
+                    </div>
+                    <div class="expand-icon" id="icon-#(dayGroup.date)">▼</div>
+                </div>
+                <div class="sessions-list" id="sessions-#(dayGroup.date)">
+                    #for(session in dayGroup.sessions):
+                    <a href="/devices/#(device.id)/sessions/#(session.id)" 
+                       class="session-item"
+                       onclick="hapticLight()">
+                        <div class="session-header">
+                            <div class="session-time-info">
+                                <span class="session-time">#(session.time) / #(session.duration)</span>
+                                #if(session.wordCount):
+                                <span class="word-count">#(session.wordCount) words</span>
+                                #endif
+                                #if(session.isRead):
+                                <span class="read-badge">✅</span>
+                                #endif
+                            </div>
+                            #if(session.type):
+                            <span class="session-type type-#(session.type)">
+                                #if(session.type == "private"):Private
+                                #elseif(session.type == "client-sale"):Sale
+                                #elseif(session.type == "client-support"):Support
+                                #else:#(session.type)#endif
+                            </span>
+                            #else:
+                            <span class="session-type type-unknown">Processing</span>
+                            #endif
+                        </div>
+                        <div class="session-title">#(session.title)</div>
+                        #if(count(session.keywords) > 0):
+                        <div class="session-keywords keywords-#if(session.type):#(session.type)#else:unknown#endif">
+                            #for(keyword in session.keywords):
+                            <span class="keyword-badge">#(keyword)</span>
+                            #endfor
+                        </div>
+                        #endif
+                    </a>
+                    #endfor
+                </div>
+            </div>
+            #endfor
+        #else:
+            <div class="no-sessions">
+                <div class="title3 text-secondary">No records</div>
+                <div class="subhead text-tertiary">No records found for the selected period</div>
+            </div>
+        #endif
+    </div>
+    
+    <div class="htmx-indicator text-center" style="padding: 20px;">
+        <div class="spinner" style="margin: 0 auto;"></div>
+        <div class="footnote text-secondary">Loading...</div>
+    </div>
+</div>
+#endexport
+
+#export("scripts"):
+<script>
+    function toggle(elementId, iconId) {
+        const element = document.getElementById(elementId);
+        const icon = document.getElementById(iconId);
+        
+        if (element.classList.contains('expanded')) {
+            element.classList.remove('expanded');
+            icon.classList.remove('rotated');
+        } else {
+            element.classList.add('expanded');
+            icon.classList.add('rotated');
+        }
+        
+        hapticSelection();
+    }
+    
+    function toggleDay(date) {
+        toggle('sessions-' + date, 'icon-' + date);
+    }
+</script>
+#endexport
+
+#endextend

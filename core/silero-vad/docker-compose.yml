@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  silero-vad:
+    build: .
+    container_name: silero-vad
+    ports:
+      - "127.0.0.1:${SILERO_VAD_PORT}:${SILERO_VAD_PORT}"
+    restart: always
+    networks:
+      - ai-reception-net
+    command: >
+      uvicorn main:app --host 0.0.0.0 --port ${SILERO_VAD_PORT}
+
+networks:
+  ai-reception-net:
+    external: true

@@ -1,0 +1,52 @@
+# ---- OS / editor junk ----
+.DS_Store
+Icon?
+Thumbs.db
+.vscode/
+.idea/
+
+# ---- Secrets (never commit) ----
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.mobileprovision
+dozzle/users.yml
+!dozzle/users.yml.example
+
+# ---- C++ / ESP32 / PlatformIO ----
+.pio/
+build/
+*.elf
+*.bin
+*.map
+sdkconfig.old
+
+# ---- Swift / Vapor ----
+.build/
+.swiftpm/
+DerivedData/
+*.xcodeproj/xcuserdata/
+build.log
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# ---- Node ----
+node_modules/
+dist/
+dist-ssr/
+
+# ---- Supabase / DB volumes / ops data ----
+supabase/volumes/db/data/
+supabase/volumes/db/backups/
+supabase/.branches/
+supabase/.temp/
+supabase/logs/
+portainer/data/
